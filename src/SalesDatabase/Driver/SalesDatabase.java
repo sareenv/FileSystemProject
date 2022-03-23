@@ -68,7 +68,7 @@ public class SalesDatabase {
             try {
                 listFiles(rop, parentPath);
             } catch (EmptyFolderException exception) {
-                System.out.println("Exception: " + exception.getMessage());
+                System.out.println("EmptyFolder Exception : " + exception.getMessage());
             }
 
             return;
@@ -98,12 +98,11 @@ public class SalesDatabase {
             PrintWriter writer = new PrintWriter(fileWriter);
             writer.println("");
             writer.flush();
-
             for (String log: logs) {
                 if (log.contains("file:")) {
                     writer.println("\t" +log);
-                    writer.flush(); // this method is required to because if automatic flushing is enabled
-                    // flush would work.
+                    writer.flush(); // this method is required to because if automatic
+                    // flushing is enabled flush would work.
                 } else {
                     writer.println(log);
                     writer.flush();
@@ -304,11 +303,9 @@ public class SalesDatabase {
                 boolean showStatus = true;
                 int selectedOption = 0;
                 while (showStatus) {
-                    System.out.println("1. Add Record");
-                    System.out.println("2. Display File Contents");
-                    System.out.println("3. Perform Binary Search");
-                    System.out.println("4. Perform Sequential Search");
-                    System.out.println("5. Store data to the Output Database.");
+                    System.out.println("1. Add Record and Display Contents");
+                    System.out.println("2. Perform Binary Search");
+                    System.out.println("3. Perform Sequential Search");
                     try {
                         selectedOption = snc.nextInt();
                         if (selectedOption < 0) {
@@ -324,19 +321,8 @@ public class SalesDatabase {
 
                 }
 
-                if (selectedOption == 1) {
-                    Sales sale1 = new Sales("China","Baby_Food", 'H',
-                            new Date("13/07/2014"),	888084399,	new Date("21/08/2014"),
-                            2764,	255,	159,	705593.92,	440636.88,
-                            264957.04);
 
-                    Sales sale2 = new Sales("China","Clothing", 'L',
-                            new Date("13/07/2014"),	988083399,	new Date("21/08/2014"),
-                            2764,	255,	159,	705593.92,	440636.88,
-                            264957.04);
-                    addRecord(sale1);
-                    addRecord(sale2);
-                } else if (selectedOption == 2) {
+                if (selectedOption == 1) {
                     displayAllFiles();
                     // write the content to the output database
                     String outputFilePath = basePath + "/output.txt";
@@ -356,7 +342,7 @@ public class SalesDatabase {
                             System.out.println("ioException has occurred");
                         }
                     }
-                } else if (selectedOption == 3) {
+                } else if (selectedOption == 2) {
                     System.out.println("Performing binary search ");
                     System.out.println("Please enter the order id");
                     long orderId = snc.nextLong();
