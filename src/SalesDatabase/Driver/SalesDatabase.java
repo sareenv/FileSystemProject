@@ -49,13 +49,8 @@ public class SalesDatabase {
         if (files != null && files.length == 0) { throw new EmptyFolderException(); }
         if (files != null) {
             for (File f: files) {
-                try {
-                    String fileName = f.getName();
-                    if (!fileName.contains(".txt")) { throw new InvalidFileException("Invalid file"); }
-                    logs.add("file: " + basePath + "/" + f.getName());
-                } catch (InvalidFileException e) {
-                    System.out.println("Error processing file " + e.getMessage());
-                }
+                String fileName = f.getName();
+                logs.add("file: " + basePath + "/" + fileName);
             }
         }
     }
@@ -90,10 +85,12 @@ public class SalesDatabase {
     }
 
     public void writeLog(String outputPath) {
-        FileOutputStream fos;
         try {
-            fos = new FileOutputStream(outputPath);
-            PrintWriter writer = new PrintWriter(fos);
+            FileWriter fileWriter = new FileWriter(outputPath, false);
+            PrintWriter writer = new PrintWriter(fileWriter);
+            writer.println("");
+            writer.flush();
+
             for (String log: logs) {
                 if (log.contains("file:")) {
                     writer.println("\t" +log);
@@ -104,7 +101,6 @@ public class SalesDatabase {
                     writer.flush();
                 }
             }
-            fos.close();
         } catch (IOException ioException) {
             System.out.println("Exception opening/closing the output " +
                     "stream ");
