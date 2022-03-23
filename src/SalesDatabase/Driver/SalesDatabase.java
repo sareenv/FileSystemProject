@@ -41,14 +41,21 @@ public class SalesDatabase {
         return true;
     }
 
-    static void listFiles(String path, String relativePath) {
+    static void listFiles(String path, String relativePath) throws EmptyFolderException {
         String basePath = path + relativePath;
         System.out.println(basePath);
         File file = new File(basePath);
         File[] files = file.listFiles();
+        if (files != null && files.length == 0) { throw new EmptyFolderException(); }
         if (files != null) {
             for (File f: files) {
-                logs.add("file: " +basePath + "/" + f.getName());
+                try {
+                    String fileName = f.getName();
+                    if (!fileName.contains(".txt")) { throw new InvalidFileException("Invalid file"); }
+                    logs.add("file: " + basePath + "/" + f.getName());
+                } catch (InvalidFileException e) {
+                    System.out.println("Error processing file " + e.getMessage());
+                }
             }
         }
     }
@@ -118,20 +125,6 @@ public class SalesDatabase {
         return result;
     }
 
-        public static void checkEmptyFolder(String path) throws EmptyFolderException {
-        File file = new File(path);
-        boolean isEmpty = true;
-        File[] files = file.listFiles();
-        if (files == null) { throw new EmptyFolderException(); }
-        for (File f : files) {
-            if (f.isFile()) {
-                isEmpty = false;
-                break;
-            }
-        }
-        if (isEmpty) { throw new EmptyFolderException();}
-    }
-
     public static void validateLogFile(String path) throws InvalidFileException,
             IOException {
         // check if the folder is empty.
@@ -161,6 +154,7 @@ public class SalesDatabase {
         ArrayList<String> files = listFiles(this.basePath);
         printFiles(files);
         return files;
+
     }
     /**
      * Adds the sales object to the salesArr.
@@ -179,6 +173,15 @@ public class SalesDatabase {
     private boolean checkDuplicateSales(Sales[] sales, Sales oSale) {
         ArrayList<Sales> countMap = new ArrayList<>(Arrays.asList(sales));
         return countMap.contains(oSale);
+    }
+
+    public void writeToDatabaseFile(String basePath, String record) throws IOException {
+        File file = new File(basePath);
+        OutputStream ostream = new FileOutputStream(file);
+        PrintWriter writer = new PrintWriter(ostream);
+        writer.println(record);
+        writer.flush();
+        ostream.close();
     }
 
     public void displayFileContents(FileInputStream inputStream) throws IOException {
@@ -245,14 +248,11 @@ public class SalesDatabase {
             @Override
             public int compare(Sales s1, Sales s2) {
                 if (s1 == s2) {
-                    //Nulls or exact equality
                     return 0;
                 } else if (s1 == null) {
-                    //s1 null and s2 not null, so s1 less
-                    return -1;
-                } else if (s2 == null) {
-                    //s2 null and s1 not null, so s1 greater
                     return 1;
+                } else if (s2 == null) {
+                    return -1;
                 } else {
                     return s1.compareTo(s2);
                 }
@@ -313,7 +313,7 @@ public class SalesDatabase {
         int selectOption = snc.nextInt();
         switch (selectOption) {
             case 1:
-                ArrayList<String> files = listFiles();
+                listFiles();
                 break;
 
             case 2:
@@ -324,11 +324,12 @@ public class SalesDatabase {
                     System.out.println("2. Display File Contents");
                     System.out.println("3. Perform Binary Search");
                     System.out.println("4. Perform Sequential Search");
+                    System.out.println("5. Store data to the Output Database.");
                     try {
                         selectedOption = snc.nextInt();
                         if (selectedOption < 0) {
                             System.out.println("Invalid option select, try again ");
-                        } else if (selectedOption > 4) {
+                        } else if (selectedOption > 5) {
                             System.out.println("Invalid option select, try again ");
                         } else {
                             showStatus = false;
@@ -340,8 +341,17 @@ public class SalesDatabase {
                 }
 
                 if (selectedOption == 1) {
-                    // load the data from the files and upload the sales each sales object
+                    Sales sale1 = new Sales("China","Baby_Food", 'H',
+                            new Date("13/07/2014"),	888084399,	new Date("21/08/2014"),
+                            2764,	255,	159,	705593.92,	440636.88,
+                            264957.04);
 
+                    Sales sale2 = new Sales("China","Clothing", 'L',
+                            new Date("13/07/2014"),	988083399,	new Date("21/08/2014"),
+                            2764,	255,	159,	705593.92,	440636.88,
+                            264957.04);
+                    addRecord(sale1);
+                    addRecord(sale2);
                 } else if (selectedOption == 2) {
                     displayAllFiles();
                 } else if (selectedOption == 3) {
@@ -382,7 +392,7 @@ public class SalesDatabase {
                 displayFileContents(inputStream);
                 inputStream.close();
             } catch (Exception e) {
-
+                System.out.println(e.getMessage());
             }
         }
     }

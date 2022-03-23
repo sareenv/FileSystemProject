@@ -1,8 +1,6 @@
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/
-	file: 1/Tom.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/21/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/21/Content.txt
-	file: 1/New.txt
+	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/Tom.txt
+	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/New.txt
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/
 	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/Harry.txt
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/
