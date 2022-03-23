@@ -24,17 +24,8 @@ public class SalesDatabase {
     static final int salesSize = 40;
     static int lastSalesObject = 0;
     static Sales[] salesArr = new Sales[salesSize];
-
     public SalesDatabase() {
         this.basePath = System.getenv("PWD");
-    }
-
-    public static void main(String[] args) {
-        SalesDatabase db = new SalesDatabase();
-        Scanner snc = new Scanner(System.in);
-        boolean isExit = true;
-        while (isExit) { db.showOperationMenu(snc); }
-        snc.close();
     }
 
     public static boolean noInnerFolder(String basePath) {
@@ -184,6 +175,7 @@ public class SalesDatabase {
             lastSalesObject++;
         }
     }
+
     public void displayFileContents(FileInputStream inputStream) throws IOException {
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -196,11 +188,11 @@ public class SalesDatabase {
         String value = buffer.toString();
         String[] records = value.split("\n");
 
-        Scanner snc = new Scanner(records[2]);
-        while (snc.hasNext()) {
-            System.out.println("Word is " + snc.next());
+        System.out.println("Displaying the contents of the file");
+        System.out.println("-----------------------------------");
+        for(String record: records) {
+            System.out.println(record);
         }
-
     }
     /**
      * Performs the optimal search operation for the searching in the sorted sales array.
@@ -248,6 +240,7 @@ public class SalesDatabase {
         }
         return new SearchResult(isFound, operationCount);
     }
+
     private void printMenuOptions() {
         System.out.println("Welcome to the database, ..... 💻");
         System.out.println("Please select from the following options.");
@@ -271,13 +264,20 @@ public class SalesDatabase {
                 break;
 
             case 2:
-                try {
-                    FileInputStream inputStream = new FileInputStream("/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/Tom.txt");
-                    displayFileContents(inputStream);
-                    inputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+                    ArrayList<String> allFiles = listFiles();
+                    for (String filePath: allFiles) {
+                        try {
+                            filePath = filePath.replace(" ", "");
+                            FileInputStream inputStream = new FileInputStream(filePath);
+                            if(!filePath.contains(".txt")) { throw new Exception("Cannot read non-txt files");}
+                            displayFileContents(inputStream);
+                            System.out.println(filePath);
+                            inputStream.close();
+                        } catch (Exception e) {
+                            System.out.println("Error Reading file: " + e.getMessage());
+                        }
+                    }
                 break;
 
             case 3:
@@ -296,6 +296,15 @@ public class SalesDatabase {
             System.out.println("FileName: " + details[details.length - 1]);
             System.out.println("Path: " + file);
         }
+    }
+
+
+    public static void main(String[] args) {
+        SalesDatabase db = new SalesDatabase();
+        Scanner snc = new Scanner(System.in);
+        boolean isExit = true;
+        while (isExit) { db.showOperationMenu(snc); }
+        snc.close();
     }
 }
 
