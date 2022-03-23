@@ -340,36 +340,8 @@ public class SalesDatabase {
                 }
 
                 if (selectedOption == 1) {
-                    snc.nextLine();
-                    System.out.println("Please enter the country");
-                    String country = snc.nextLine();
-                    System.out.println("Please enter the item type");
-                    String item_type = snc.next();
-                    System.out.println("Please enter the order priority");
-                    char order_priority = snc.next().charAt(0);
-                    System.out.println("Please enter the order date");
-                    String date = snc.next();
-                    Date order_date = new Date(date);
-                    System.out.println("Please enter the order id");
-                    long order_ID = snc.nextLong();
-                    System.out.println("Please enter the shipping date");
-                    String shipping_date = snc.next();
-                    Date ship_date = new Date(shipping_date);
-                    System.out.println("Please enter the units sold");
-                    int units_sold = snc.nextInt();
-                    System.out.println("Please enter the unit price");
-                    float unit_price = snc.nextFloat();
-                    System.out.println("Please enter the unit cost");
-                    float unit_cost = snc.nextFloat();
-                    System.out.println("Please enter the order revenue");
-                    Double revenue = snc.nextDouble();
-                    System.out.println("Please enter the total cost");
-                    Double total_cost = snc.nextDouble();
-                    System.out.println("Please enter the total profit");
-                    Double total_profit = snc.nextDouble();
-                    Sales sales = new Sales(country, item_type, order_priority, order_date, order_ID, ship_date,
-                            units_sold, unit_price, unit_cost, revenue, total_cost, total_profit);
-                    addRecord(sales);
+                    // load the data from the files and upload the sales each sales object
+
                 } else if (selectedOption == 2) {
                     displayAllFiles();
                 } else if (selectedOption == 3) {
