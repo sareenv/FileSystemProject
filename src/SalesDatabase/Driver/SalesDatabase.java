@@ -46,7 +46,10 @@ public class SalesDatabase {
         System.out.println(basePath);
         File file = new File(basePath);
         File[] files = file.listFiles();
-        if (files != null && files.length == 0) { throw new EmptyFolderException(); }
+        if (files != null && files.length == 0) {
+            throw new EmptyFolderException("Empty Folder : " + basePath + " contains no " +
+                    "files inside it");
+        }
         if (files != null) {
             for (File f: files) {
                 String fileName = f.getName();
@@ -62,7 +65,12 @@ public class SalesDatabase {
             String[] paths = basePath.split("/");
             String parentPath = paths[paths.length - 1];
             String rop = basePath.replace(parentPath, "");
-            listFiles(rop, parentPath);
+            try {
+                listFiles(rop, parentPath);
+            } catch (EmptyFolderException exception) {
+                System.out.println("Exception: " + exception.getMessage());
+            }
+
             return;
         }
 
@@ -121,22 +129,6 @@ public class SalesDatabase {
         return result;
     }
 
-    public static void validateLogFile(String path) throws InvalidFileException,
-            IOException {
-        // check if the folder is empty.
-        try {
-            FileInputStream inputStream = new FileInputStream(path.substring(1));
-            inputStream.close();
-        } catch (FileNotFoundException notFoundException) {
-            System.out.println("Not found exception "
-                    + notFoundException.getMessage());
-            String[] details = path.split("/");
-            String file = details[details.length - 1];
-            throw new InvalidFileException(file);
-        } catch (Exception e) {
-            System.out.println("Another Exception " + e.getMessage());
-        }
-    }
 
     /**
      * Returns the list to images from the directories from the Data folder.
