@@ -1,5 +1,13 @@
 package SalesDatabase.Exceptions;
 
+
+/**
+ * InvalidFileException class is the custom exception class which is thrown
+ * file invalid file type is provided to be processed
+ * @author Vinayak Sareen
+ * @see Exception
+ * */
+
 public class InvalidFileException extends Exception {
 
     public InvalidFileException(String file, String errorMessage) throws Exception {
