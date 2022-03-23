@@ -176,12 +176,10 @@ public class SalesDatabase {
     }
 
     public void writeToDatabaseFile(String basePath, String record) throws IOException {
-        File file = new File(basePath);
-        OutputStream ostream = new FileOutputStream(file);
-        PrintWriter writer = new PrintWriter(ostream);
+        FileWriter fileWriter = new FileWriter(basePath, true);
+        PrintWriter writer = new PrintWriter(fileWriter);
         writer.println(record);
         writer.flush();
-        ostream.close();
     }
 
     public void displayFileContents(FileInputStream inputStream) throws IOException {
@@ -230,8 +228,6 @@ public class SalesDatabase {
                         + exception.getMessage());
             }
         }
-
-
     }
     /**
      * Performs the optimal search operation for the searching in the sorted sales array.
@@ -354,6 +350,24 @@ public class SalesDatabase {
                     addRecord(sale2);
                 } else if (selectedOption == 2) {
                     displayAllFiles();
+                    // write the content to the output database
+                    String outputFilePath = basePath + "/output.txt";
+                    try  {
+                        PrintWriter writer = new PrintWriter(outputFilePath);
+                        writer.println("");
+                    } catch (Exception e) {
+                        System.out.println("Error clearing the contents" +
+                                " before running Details: " + e.getMessage());
+                    }
+
+                    for (int i = 0; i< lastSalesObject; i++) {
+                        Sales sale = salesArr[i];
+                        try {
+                            writeToDatabaseFile(outputFilePath, sale.toString());
+                        } catch (IOException ioException) {
+                            System.out.println("ioException has occurred");
+                        }
+                    }
                 } else if (selectedOption == 3) {
                     System.out.println("Performing binary search ");
                     System.out.println("Please enter the order id");
