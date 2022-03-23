@@ -47,24 +47,20 @@ public class Sales implements Serializable, Comparable<Sales> {
 
     @Override
     public String toString() {
-        return "Sales{" +
-                "country='" + country + '\'' +
-                ", item_type='" + item_type + '\'' +
-                ", order_priority=" + order_priority +
-                ", order_date=" + order_date +
-                ", order_ID=" + order_ID +
-                ", ship_date=" + ship_date +
-                ", units_sold=" + units_sold +
-                ", unit_price=" + unit_price +
-                ", unit_cost=" + unit_cost +
-                ", revenue=" + revenue +
-                ", total_cost=" + total_cost +
-                ", total_profit=" + total_profit +
-                '}';
+        return
+                "Country:  " + country +
+                        ", Item Type: " +  item_type  +
+                        ", Priority: " +  order_priority +
+                        ", Order Date: " +  order_date +
+                        ", Order ID: " + order_ID +
+                        ", Shipping Date: " +  ship_date +
+                        ", Units Sold: " + units_sold +
+                        ", Unit Price: " + unit_price +
+                        ", Unit Cost: " + unit_cost +
+                        ", Revenue: " + revenue +
+                        ", Total Cost: " + total_cost +
+                        ", Total Profit: " + total_profit;
     }
-
-
-
 
     @Override
     public boolean equals(Object o) {

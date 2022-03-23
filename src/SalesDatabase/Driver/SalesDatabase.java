@@ -18,13 +18,15 @@ import java.util.*;
 
 public class SalesDatabase {
     private final String basePath;
-    static ArrayList<String> logs = new ArrayList<>();
     static final int salesSize = 40;
-    static int lastSalesObject = 0;
+    static int lastSalesObject = -1;
     static Sales[] salesArr = new Sales[salesSize];
     public SalesDatabase() {
         this.basePath = System.getenv("PWD");
     }
+    static ArrayList<String> logs = new ArrayList<>();
+
+
 
     public static boolean noInnerFolder(String basePath) {
         File file = new File(basePath);
@@ -116,7 +118,7 @@ public class SalesDatabase {
         return result;
     }
 
-    public static void checkEmptyFolder(String path) throws EmptyFolderException {
+        public static void checkEmptyFolder(String path) throws EmptyFolderException {
         File file = new File(path);
         boolean isEmpty = true;
         File[] files = file.listFiles();
@@ -169,9 +171,14 @@ public class SalesDatabase {
         if (lastSalesObject == salesArr.length - 1) {
             System.out.println("Sorry the limit of array ");
         } else {
-            salesArr[lastSalesObject] = obj;
             lastSalesObject++;
+            salesArr[lastSalesObject] = obj;
         }
+    }
+
+    private boolean checkDuplicateSales(Sales[] sales, Sales oSale) {
+        ArrayList<Sales> countMap = new ArrayList<>(Arrays.asList(sales));
+        return countMap.contains(oSale);
     }
 
     public void displayFileContents(FileInputStream inputStream) throws IOException {
@@ -186,11 +193,42 @@ public class SalesDatabase {
         String value = buffer.toString();
         String[] records = value.split("\n");
 
-        System.out.println("Displaying the contents of the file");
-        System.out.println("-----------------------------------");
-        for(String record: records) {
-            System.out.println(record);
+        ArrayList<ArrayList<String>> content = new ArrayList<>();
+
+        for (String record: records) {
+            Scanner snc = new Scanner(record);
+            ArrayList<String> instanceRecord = new ArrayList<>();
+            while (snc.hasNext()) {
+                String data = snc.next();
+                data = data.replace(" ", "");
+                instanceRecord.add(data);
+            }
+            content.add(instanceRecord);
+            snc.close();
         }
+
+
+        for (ArrayList<String> record: content) {
+            try {
+                Sales sale = new Sales(record.get(0), record.get(1), record.get(2).length() > 0 ? record.get(2).charAt(0) :
+                        'N', new Date(record.get(3)), Long.parseLong(record.get(4)), new Date(record.get(5)),
+                        Integer.parseInt(record.get(6)), Float.parseFloat(record.get(7)), Float.parseFloat(record.get(8)),
+                        Double.parseDouble(record.get(9)), Double.parseDouble(record.get(10)),
+                        Double.parseDouble(record.get(11)));
+
+                if (checkDuplicateSales(salesArr, sale)) {
+                    System.out.println("DUPLICATE RECORD:: " + sale);
+                } else {
+                    System.out.println(sale);
+                    addRecord(sale);
+                }
+            } catch (Exception exception) {
+                System.out.println("Exception saving the sales object, check your input data \n Message: "
+                        + exception.getMessage());
+            }
+        }
+
+
     }
     /**
      * Performs the optimal search operation for the searching in the sorted sales array.
@@ -203,10 +241,27 @@ public class SalesDatabase {
     public SearchResult binarySalesSearch(long orderID) {
 
         if (lastSalesObject == 0) { return new SearchResult(false, 0);}
-        Arrays.sort(salesArr);
+        Arrays.sort(salesArr, new Comparator<Sales>() {
+            @Override
+            public int compare(Sales s1, Sales s2) {
+                if (s1 == s2) {
+                    //Nulls or exact equality
+                    return 0;
+                } else if (s1 == null) {
+                    //s1 null and s2 not null, so s1 less
+                    return -1;
+                } else if (s2 == null) {
+                    //s2 null and s1 not null, so s1 greater
+                    return 1;
+                } else {
+                    return s1.compareTo(s2);
+                }
+
+            }
+        });
 
         int low = 0;
-        int high = salesArr.length - 1;
+        int high = lastSalesObject; // only until this point the array is filled.
         int opCnt = 0;
         while (low <= high) {
             int middle = low + (high - low) / 2;
@@ -233,6 +288,9 @@ public class SalesDatabase {
         boolean isFound = false;
         int operationCount = 0;
         for (Sales sale: salesArr) {
+            if (sale == null) {
+                continue;
+            }
             operationCount++;
             if (sale.order_ID == order_ID) {
                 isFound = true;
@@ -256,12 +314,6 @@ public class SalesDatabase {
         switch (selectOption) {
             case 1:
                 ArrayList<String> files = listFiles();
-                try {
-                    for(String file: files)
-                        validateLogFile(file);
-                } catch (InvalidFileException | IOException fne) {
-                    System.out.println(fne.getMessage());
-                }
                 break;
 
             case 2:
@@ -272,13 +324,23 @@ public class SalesDatabase {
                     System.out.println("2. Display File Contents");
                     System.out.println("3. Perform Binary Search");
                     System.out.println("4. Perform Sequential Search");
-                    selectedOption = snc.nextInt();
-                    if ((selectedOption > 0 && selectedOption < 4)) { showStatus = false; }
-
-                    else {
-                        System.out.println("Invalid option is selected try again"); }
+                    try {
+                        selectedOption = snc.nextInt();
+                        if (selectedOption < 0) {
+                            System.out.println("Invalid option select, try again ");
+                        } else if (selectedOption > 4) {
+                            System.out.println("Invalid option select, try again ");
+                        } else {
+                            showStatus = false;
+                        }
+                    } catch (InputMismatchException exception) {
+                        System.out.println("Invalid inout type received");
                     }
+
+                }
+
                 if (selectedOption == 1) {
+                    snc.nextLine();
                     System.out.println("Please enter the country");
                     String country = snc.nextLine();
                     System.out.println("Please enter the item type");
@@ -335,7 +397,7 @@ public class SalesDatabase {
                 System.out.println("Invalid option was selected! Please try again ");
                 showOperationMenu(snc);
                 break;
-        }
+            }
     }
 
     private void displayAllFiles() {
@@ -346,10 +408,9 @@ public class SalesDatabase {
                 FileInputStream inputStream = new FileInputStream(filePath);
                 if(!filePath.contains(".txt")) { throw new Exception("Cannot read non-txt files");}
                 displayFileContents(inputStream);
-                System.out.println(filePath);
                 inputStream.close();
             } catch (Exception e) {
-                System.out.println("Error Reading file: " + e.getMessage());
+
             }
         }
     }
