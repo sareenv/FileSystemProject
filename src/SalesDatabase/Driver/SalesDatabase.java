@@ -6,9 +6,7 @@ import SalesDatabase.Models.Sales;
 import SalesDatabase.Models.SearchResult;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * SalesDatabase class is  responsible for managing the file system interaction and manipulation.
@@ -203,7 +201,10 @@ public class SalesDatabase {
      * @return SearchResult
      * */
     public SearchResult binarySalesSearch(long orderID) {
+
+        if (lastSalesObject == 0) { return new SearchResult(false, 0);}
         Arrays.sort(salesArr);
+
         int low = 0;
         int high = salesArr.length - 1;
         int opCnt = 0;
@@ -264,20 +265,66 @@ public class SalesDatabase {
                 break;
 
             case 2:
+                boolean showStatus = true;
+                int selectedOption = 0;
+                while (showStatus) {
+                    System.out.println("1. Add Record");
+                    System.out.println("2. Display File Contents");
+                    System.out.println("3. Perform Binary Search");
+                    System.out.println("4. Perform Sequential Search");
+                    selectedOption = snc.nextInt();
+                    if ((selectedOption > 0 && selectedOption < 4)) { showStatus = false; }
 
-                    ArrayList<String> allFiles = listFiles();
-                    for (String filePath: allFiles) {
-                        try {
-                            filePath = filePath.replace(" ", "");
-                            FileInputStream inputStream = new FileInputStream(filePath);
-                            if(!filePath.contains(".txt")) { throw new Exception("Cannot read non-txt files");}
-                            displayFileContents(inputStream);
-                            System.out.println(filePath);
-                            inputStream.close();
-                        } catch (Exception e) {
-                            System.out.println("Error Reading file: " + e.getMessage());
-                        }
+                    else {
+                        System.out.println("Invalid option is selected try again"); }
                     }
+                if (selectedOption == 1) {
+                    System.out.println("Please enter the country");
+                    String country = snc.nextLine();
+                    System.out.println("Please enter the item type");
+                    String item_type = snc.next();
+                    System.out.println("Please enter the order priority");
+                    char order_priority = snc.next().charAt(0);
+                    System.out.println("Please enter the order date");
+                    String date = snc.next();
+                    Date order_date = new Date(date);
+                    System.out.println("Please enter the order id");
+                    long order_ID = snc.nextLong();
+                    System.out.println("Please enter the shipping date");
+                    String shipping_date = snc.next();
+                    Date ship_date = new Date(shipping_date);
+                    System.out.println("Please enter the units sold");
+                    int units_sold = snc.nextInt();
+                    System.out.println("Please enter the unit price");
+                    float unit_price = snc.nextFloat();
+                    System.out.println("Please enter the unit cost");
+                    float unit_cost = snc.nextFloat();
+                    System.out.println("Please enter the order revenue");
+                    Double revenue = snc.nextDouble();
+                    System.out.println("Please enter the total cost");
+                    Double total_cost = snc.nextDouble();
+                    System.out.println("Please enter the total profit");
+                    Double total_profit = snc.nextDouble();
+                    Sales sales = new Sales(country, item_type, order_priority, order_date, order_ID, ship_date,
+                            units_sold, unit_price, unit_cost, revenue, total_cost, total_profit);
+                    addRecord(sales);
+                } else if (selectedOption == 2) {
+                    displayAllFiles();
+                } else if (selectedOption == 3) {
+                    System.out.println("Performing binary search ");
+                    System.out.println("Please enter the order id");
+                    long orderId = snc.nextLong();
+                    SearchResult result = binarySalesSearch(orderId);
+                    System.out.println("Found Element: " + result.isFound());
+                    System.out.println("Comparison Required: " + result.getRecordCount());
+                } else {
+                    System.out.println("Performing sequential search ");
+                    System.out.println("Please enter the order id");
+                    long orderId = snc.nextLong();
+                    SearchResult result = sequentialSaleSearch(orderId);
+                    System.out.println("Found Element: " + result.isFound());
+                    System.out.println("Comparison Required: " + result.getRecordCount());
+                }
                 break;
 
             case 3:
@@ -290,6 +337,23 @@ public class SalesDatabase {
                 break;
         }
     }
+
+    private void displayAllFiles() {
+        ArrayList<String> allFiles = listFiles();
+        for (String filePath: allFiles) {
+            try {
+                filePath = filePath.replace(" ", "");
+                FileInputStream inputStream = new FileInputStream(filePath);
+                if(!filePath.contains(".txt")) { throw new Exception("Cannot read non-txt files");}
+                displayFileContents(inputStream);
+                System.out.println(filePath);
+                inputStream.close();
+            } catch (Exception e) {
+                System.out.println("Error Reading file: " + e.getMessage());
+            }
+        }
+    }
+
     private void printFiles(ArrayList<String> files) {
         for (String file: files) {
             String[] details = file.split("/");

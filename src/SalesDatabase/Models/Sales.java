@@ -94,6 +94,7 @@ public class Sales implements Serializable, Comparable<Sales> {
 
     @Override
     public int compareTo(Sales o) {
+        if (o == null) { return 1; }
         return (int) (this.order_ID - o.order_ID);
     }
 }
