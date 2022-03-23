@@ -1,6 +1,7 @@
 package SalesDatabase.Models;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
@@ -47,13 +48,15 @@ public class Sales implements Serializable, Comparable<Sales> {
 
     @Override
     public String toString() {
+        String pattern = "dd/MM/yyyy";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
         return
                 "Country:  " + country +
                         ", Item Type: " +  item_type  +
                         ", Priority: " +  order_priority +
-                        ", Order Date: " +  order_date +
+                        ", Order Date: " + dateFormat.format(order_date) +
                         ", Order ID: " + order_ID +
-                        ", Shipping Date: " +  ship_date +
+                        ", Shipping Date: " +  dateFormat.format(ship_date) +
                         ", Units Sold: " + units_sold +
                         ", Unit Price: " + unit_price +
                         ", Unit Cost: " + unit_cost +
