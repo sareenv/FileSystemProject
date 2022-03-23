@@ -1,5 +1,6 @@
 package SalesDatabase.Driver;
 
+import SalesDatabase.Exceptions.DuplicateRecordException;
 import SalesDatabase.Exceptions.EmptyFolderException;
 import SalesDatabase.Exceptions.InvalidFileException;
 import SalesDatabase.Models.Sales;
@@ -27,18 +28,6 @@ public class SalesDatabase {
     static ArrayList<String> logs = new ArrayList<>();
 
 
-    public static boolean noInnerFolder(String basePath) {
-        File file = new File(basePath);
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f: files) {
-                if(!f.isFile()) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     /**
      * Method lists all the files in the current directory and throws an exception
@@ -64,8 +53,7 @@ public class SalesDatabase {
                 if (fileName.equals(".DS_Store")) { continue; }
 
                 if (f1.isFile() && !fileName.contains(".txt")) {
-                    throw new InvalidFileException("Invalid File Type: " + fileName +
-                            " cannot be processed by the system.");
+                    System.out.println("Invalid/Unsupported File: " + fileName);
                 }
 
                 if (file.isDirectory()) {
@@ -179,10 +167,13 @@ public class SalesDatabase {
 
                 if (checkDuplicateSales(salesArr, sale)) {
                     System.out.println("DUPLICATE RECORD:: " + sale);
+                    throw new DuplicateRecordException();
                 } else {
                     System.out.println(sale);
                     addRecord(sale);
                 }
+            } catch (DuplicateRecordException duplicationException) {
+                System.out.println("Duplication Exception: " + duplicationException.getMessage());
             } catch (Exception exception) {
                 System.out.println("Exception saving the sales object, check your input data \n Message: "
                         + exception.getMessage());
@@ -306,7 +297,7 @@ public class SalesDatabase {
                             showStatus = false;
                         }
                     } catch (InputMismatchException exception) {
-                        System.out.println("Invalid inout type received");
+                        System.out.println("Invalid input type received");
                     }
                 }
 
@@ -374,12 +365,14 @@ public class SalesDatabase {
         for (String filePath: allFiles) {
             try {
                 filePath = filePath.replace(" ", "");
+                if(!filePath.contains(".txt")) { throw new InvalidFileException("Cannot read non-txt files");}
                 FileInputStream inputStream = new FileInputStream(filePath);
-                if(!filePath.contains(".txt")) { throw new Exception("Cannot read non-txt files");}
                 displayFileContents(inputStream);
                 inputStream.close();
-            } catch (Exception e) {
+            } catch (InvalidFileException e) {
                 System.out.println(e.getMessage());
+            } catch (Exception e) {
+                System.out.println("Exception: " + e.getMessage());
             }
         }
     }

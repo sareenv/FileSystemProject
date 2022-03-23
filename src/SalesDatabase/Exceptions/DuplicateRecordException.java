@@ -1,7 +1,7 @@
 package SalesDatabase.Exceptions;
 
 
-class DuplicateRecordException extends Exception {
+public class DuplicateRecordException extends Exception {
     public DuplicateRecordException() {
         super("Duplicate record found exception");
     }
