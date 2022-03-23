@@ -1,23 +1,31 @@
-package Main.Models;
+package SalesDatabase.Models;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
-public class Sales implements Serializable, Comparable<Sales> {
 
-    private final String country;
-    private final String item_type;
-    private final char order_priority;
-    private final Date order_date;
+
+/**
+ * Sales is a model class which contain the relevant information regarding the Sales class
+ * @author Vinayak Sareen.
+ * @see Serializable
+ * @see Comparable
+ * */
+
+public class Sales implements Serializable, Comparable<Sales> {
+    public final String country;
+    public final String item_type;
+    public final char order_priority;
+    public final Date order_date;
     public final long order_ID;
-    private final Date ship_date;
-    private final int units_sold;
-    private final float unit_price;
-    private final float unit_cost;
-    private final Double revenue;
-    private final Double total_cost;
-    private final Double total_profit;
+    public final Date ship_date;
+    public final int units_sold;
+    public final float unit_price;
+    public final float unit_cost;
+    public final Double revenue;
+    public final Double total_cost;
+    public final Double total_profit;
 
     public Sales(String country, String item_type, char order_priority, Date order_date,
                  long order_ID, Date ship_date, int units_sold, float unit_price,

@@ -1,20 +1,40 @@
-package Main;
+package SalesDatabase.Driver;
 
-import Main.Exceptions.EmptyFolderException;
-import Main.Exceptions.InvalidFileException;
-import Main.Models.Sales;
+import SalesDatabase.Exceptions.EmptyFolderException;
+import SalesDatabase.Exceptions.InvalidFileException;
+import SalesDatabase.Models.Sales;
+import SalesDatabase.Models.SearchResult;
+
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
-class SalesDatabase {
+/**
+ * SalesDatabase class is  responsible for managing the file system interaction and manipulation.
+ *
+ * @author Vinayak Sareen
+ * @see Sales
+ * @see InvalidFileException
+ * */
+
+public class SalesDatabase {
     private final String basePath;
     static ArrayList<String> logs = new ArrayList<>();
-    static Sales[] salesArr;
+    static final int salesSize = 40;
+    static int lastSalesObject = 0;
+    static Sales[] salesArr = new Sales[salesSize];
 
-    // constructor.
     public SalesDatabase() {
         this.basePath = System.getenv("PWD");
+    }
+
+    public static void main(String[] args) {
+        SalesDatabase db = new SalesDatabase();
+        Scanner snc = new Scanner(System.in);
+        boolean isExit = true;
+        while (isExit) { db.showOperationMenu(snc); }
+        snc.close();
     }
 
     public static boolean noInnerFolder(String basePath) {
@@ -42,7 +62,6 @@ class SalesDatabase {
         }
     }
 
-
     public static void directories(String basePath) {
         //  base case
         //  no more folders are present.
@@ -53,7 +72,7 @@ class SalesDatabase {
             listFiles(rop, parentPath);
             return;
         }
-        
+
         File file = new File(basePath);
         File[] files = file.listFiles();
         if (files != null) {
@@ -108,7 +127,6 @@ class SalesDatabase {
         return result;
     }
 
-
     public static void checkEmptyFolder(String path) throws EmptyFolderException {
         File file = new File(path);
         boolean isEmpty = true;
@@ -122,8 +140,6 @@ class SalesDatabase {
         }
         if (isEmpty) { throw new EmptyFolderException();}
     }
-
-    // invalid file exception.
 
     public static void validateLogFile(String path) throws InvalidFileException,
             IOException {
@@ -142,23 +158,34 @@ class SalesDatabase {
         }
     }
 
+    /**
+     * Returns the list to images from the directories from the Data folder.
+     * @return ArrayList<String>
+     * */
     public ArrayList<String> listFiles() {
         String logFilePath = basePath + "/log.txt";
-        String dataFolderPath = basePath + "/src/Main/Data";
+        String dataFolderPath = basePath + "/src/SalesDatabase/Data";
         directories(dataFolderPath);
         writeLog(logFilePath);
         ArrayList<String> files = listFiles(this.basePath);
         printFiles(files);
         return files;
     }
-
+    /**
+     * Adds the sales object to the salesArr.
+     * @see Sales
+     * @param obj passed the sales object to be added to the array.
+     * */
     public void addRecord(Sales obj) {
-
+        if (lastSalesObject == salesArr.length - 1) {
+            System.out.println("Sorry the limit of array ");
+        } else {
+            salesArr[lastSalesObject] = obj;
+            lastSalesObject++;
+        }
     }
-
-    // MUST Use the buffered reader. - done.
-    public void displayFileContents(FileInputStream instream) throws IOException {
-        InputStreamReader inputStreamReader = new InputStreamReader(instream);
+    public void displayFileContents(FileInputStream inputStream) throws IOException {
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
         String currentLine = "";
         StringBuilder buffer = new StringBuilder();
@@ -168,27 +195,48 @@ class SalesDatabase {
         }
         String value = buffer.toString();
         String[] records = value.split("\n");
-        for(String record: records) {
 
-        }
         Scanner snc = new Scanner(records[2]);
         while (snc.hasNext()) {
             System.out.println("Word is " + snc.next());
         }
 
     }
-
-
-    // BinarySalesSearch
-    // must keep track of no of iterations required to search.
-    public void binarySalesSearch(long order_ID) {
-        // this method is great but requires the array/seq to be in the sorted fashion.
-
+    /**
+     * Performs the optimal search operation for the searching in the sorted sales array.
+     * The operations are performed in O(log n).
+     * @see Sales
+     * @see SearchResult
+     * @param orderID order id describes the particular order.
+     * @return SearchResult
+     * */
+    public SearchResult binarySalesSearch(long orderID) {
+        Arrays.sort(salesArr);
+        int low = 0;
+        int high = salesArr.length - 1;
+        int opCnt = 0;
+        while (low <= high) {
+            int middle = low + (high - low) / 2;
+            opCnt++;
+            if (salesArr[middle].order_ID == orderID) {
+                return new SearchResult(true, opCnt);
+            } else if(orderID > salesArr[middle].order_ID) {
+                low = middle + 1;
+                opCnt++;
+            } else {
+                high = middle - 1;
+                opCnt++;
+            }
+        }
+        return new SearchResult(false, opCnt);
     }
-
-    // SequentialSaleSearch
-    // must keep track of no of operations required to search.
-    public void sequentialSaleSearch(long order_ID) {
+    /**
+     * search for the sales record in the file system with order id.
+     * @param order_ID is the order id of the sale item.
+     * @return searchResult the search result which contain the count of operations to search the record
+     *  and if the item is found.
+     * */
+    public SearchResult sequentialSaleSearch(long order_ID) {
         boolean isFound = false;
         int operationCount = 0;
         for (Sales sale: salesArr) {
@@ -198,13 +246,8 @@ class SalesDatabase {
                 break;
             }
         }
-        if(isFound) {
-            System.out.println("Found the sale within " + operationCount + " iterations.");
-        } else {
-            System.out.println("Item not found and used " + operationCount + " iterations.");
-        }
+        return new SearchResult(isFound, operationCount);
     }
-
     private void printMenuOptions() {
         System.out.println("Welcome to the database, ..... 💻");
         System.out.println("Please select from the following options.");
@@ -212,49 +255,41 @@ class SalesDatabase {
         System.out.println("2. Process Files");
         System.out.println("3. Exit");
     }
-
     public void showOperationMenu(Scanner snc) {
         printMenuOptions();
         // develop the exception here
-       int selectOption = snc.nextInt();
-       switch (selectOption) {
-           case 1:
-               ArrayList<String> files = listFiles();
-               try {
-                   System.out.println("the src is "  + files);
-                   for(String file: files)
-                   validateLogFile(file);
-               } catch (InvalidFileException fne) {
-                   System.out.println(fne.getMessage());
-               } catch (IOException ioException) {
-                   System.out.println(ioException.getMessage());
-               }
-               break;
+        int selectOption = snc.nextInt();
+        switch (selectOption) {
+            case 1:
+                ArrayList<String> files = listFiles();
+                try {
+                    for(String file: files)
+                        validateLogFile(file);
+                } catch (InvalidFileException | IOException fne) {
+                    System.out.println(fne.getMessage());
+                }
+                break;
 
-           case 2:
-               System.out.println("processing files ....");
-               try {
-                   FileInputStream inputStream = new FileInputStream("/Users/databunker/IdeaProjects/AssignmentFS/src/Main/Data/1/Tom.txt");
-                   displayFileContents(inputStream);
-                   inputStream.close();
-               } catch (IOException e) {
-                   e.printStackTrace();
-               }
-               break;
+            case 2:
+                try {
+                    FileInputStream inputStream = new FileInputStream("/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/Tom.txt");
+                    displayFileContents(inputStream);
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
 
-           case 3:
-               System.out.println("Terminating program: Thanks for using the system");
-               System.exit(1);
+            case 3:
+                System.out.println("Terminating program: Thanks for using the system");
+                System.exit(1);
 
-           default:
-               System.out.println("Invalid option was selected! Please try again ");
-               showOperationMenu(snc);
-               break;
-       }
+            default:
+                System.out.println("Invalid option was selected! Please try again ");
+                showOperationMenu(snc);
+                break;
+        }
     }
-
-
-
     private void printFiles(ArrayList<String> files) {
         for (String file: files) {
             String[] details = file.split("/");
@@ -264,13 +299,3 @@ class SalesDatabase {
     }
 }
 
-public class Main {
-
-    public static void main(String[] args) {
-        SalesDatabase db = new SalesDatabase();
-        Scanner snc = new Scanner(System.in);
-        boolean isExit = true;
-        while (isExit) { db.showOperationMenu(snc); }
-        snc.close();
-    }
-}

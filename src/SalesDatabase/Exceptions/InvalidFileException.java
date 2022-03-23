@@ -1,10 +1,4 @@
-package Main.Exceptions;
-
-/*
-*
-* @author: Vinayak Sareen.
-* */
-
+package SalesDatabase.Exceptions;
 
 public class InvalidFileException extends Exception {
 
