@@ -1,19 +1,8 @@
 
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/EmptyFolder/
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/
-	file: 1/hello.py
 	file: 1/Tom.txt
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/
-	file: 1/New.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/Harry.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/Sam.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/EmptyFolder/
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/
-	file: 1/hello.py
-	file: 1/Tom.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/
+	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/hacker.txt
 	file: 1/New.txt
 Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/
 	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/Harry.txt

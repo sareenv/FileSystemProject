@@ -27,7 +27,6 @@ public class SalesDatabase {
     static ArrayList<String> logs = new ArrayList<>();
 
 
-
     public static boolean noInnerFolder(String basePath) {
         File file = new File(basePath);
         File[] files = file.listFiles();
@@ -41,56 +40,48 @@ public class SalesDatabase {
         return true;
     }
 
-    static void listFiles(String path, String relativePath) throws EmptyFolderException {
-        String basePath = path + relativePath;
-        System.out.println(basePath);
+    /**
+     * Method lists all the files in the current directory and throws an exception
+     * when empty folder is passed
+     * @param basePath basePath of the project for reading the file
+     * @param paths result paths of files and directories.
+     * @see EmptyFolderException
+     * */
+
+    public static void listFiles(String basePath, ArrayList<String> paths)
+            throws EmptyFolderException, InvalidFileException {
+
         File file = new File(basePath);
         File[] files = file.listFiles();
+
         if (files != null && files.length == 0) {
-            throw new EmptyFolderException("Empty Folder : " + basePath + " contains no " +
-                    "files inside it");
+            throw new EmptyFolderException();
         }
+
         if (files != null) {
-            for (File f: files) {
-                String fileName = f.getName();
-                logs.add("file: " + basePath + "/" + fileName);
-            }
-        }
-    }
+            for (File f1 : files) {
+                String fileName = f1.getName();
+                if (fileName.equals(".DS_Store")) { continue; }
 
-    public static void directories(String basePath) {
-        //  base case
-        //  no more folders are present.
-        if(noInnerFolder(basePath)) {
-            String[] paths = basePath.split("/");
-            String parentPath = paths[paths.length - 1];
-            String rop = basePath.replace(parentPath, "");
-            try {
-                listFiles(rop, parentPath);
-            } catch (EmptyFolderException exception) {
-                System.out.println("EmptyFolder Exception : " + exception.getMessage());
-            }
+                if (f1.isFile() && !fileName.contains(".txt")) {
+                    throw new InvalidFileException("Invalid File Type: " + fileName +
+                            " cannot be processed by the system.");
+                }
 
-            return;
-        }
-
-        File file = new File(basePath);
-        File[] files = file.listFiles();
-        if (files != null) {
-            for (File f: files) {
-                if(f.isFile()) {
-                    String[] folderPath = basePath.split("/");
-                    String baseFolder = folderPath[folderPath.length - 1];
-                    logs.add("file: " + baseFolder + "/" + f.getName());
-                } else {
-                    if (!f.getName().equals(".idea")) {
-                        logs.add("Directory: " + basePath + "/" +  f.getName() + "/");
-                        directories(basePath + "/" + f.getName());
+                if (file.isDirectory()) {
+                    String pathName = file.getAbsolutePath();
+                    pathName = pathName + "/" + fileName;
+                    paths.add(pathName);
+                    try {
+                        listFiles(pathName, paths);
+                    } catch (Exception exception) {
+                        System.out.println("Exception: " + exception.getMessage());
                     }
                 }
             }
         }
     }
+
 
     public void writeLog(String outputPath) {
         try {
@@ -99,7 +90,7 @@ public class SalesDatabase {
             writer.println("");
             writer.flush();
             for (String log: logs) {
-                if (log.contains("file:")) {
+                if (log.contains(".txt")) {
                     writer.println("\t" +log);
                     writer.flush(); // this method is required to because if automatic
                     // flushing is enabled flush would work.
@@ -117,32 +108,14 @@ public class SalesDatabase {
         }
     }
 
-    public ArrayList<String> listFiles(String basePath) {
+    public ArrayList<String> listFilesAndDirectories() throws InvalidFileException {
+        String path = basePath + "/src/SalesDatabase/Data";
         ArrayList<String> result = new ArrayList<>();
-        for (String log: logs) {
-            if (log.contains("file:")) {
-                String fileName = log.replace("file:", "");
-                result.add(fileName);
-            }
-        }
+        listFiles(path, result);
         return result;
     }
 
 
-    /**
-     * Returns the list to images from the directories from the Data folder.
-     * @return ArrayList<String>
-     * */
-    public ArrayList<String> listFiles() {
-        String logFilePath = basePath + "/log.txt";
-        String dataFolderPath = basePath + "/src/SalesDatabase/Data";
-        directories(dataFolderPath);
-        writeLog(logFilePath);
-        ArrayList<String> files = listFiles(this.basePath);
-        printFiles(files);
-        return files;
-
-    }
     /**
      * Adds the sales object to the salesArr.
      * @see Sales
@@ -283,6 +256,15 @@ public class SalesDatabase {
         return new SearchResult(isFound, operationCount);
     }
 
+    private void printLogs() {
+        for (String log: logs) {
+            if (log.contains(".txt")) {
+                System.out.println("File: " + log);
+            } else {
+                System.out.println("Directory: " + log);
+            }
+        }
+    }
     private void printMenuOptions() {
         System.out.println("Welcome to the database, ..... 💻");
         System.out.println("Please select from the following options.");
@@ -296,7 +278,15 @@ public class SalesDatabase {
         int selectOption = snc.nextInt();
         switch (selectOption) {
             case 1:
-                listFiles();
+                try {
+                    ArrayList<String> result = listFilesAndDirectories();
+                    String outputPath = basePath + "/output.txt/";
+                    logs.addAll(result);
+                    printLogs();
+                    writeLog(outputPath);
+                } catch (InvalidFileException e) {
+                    System.out.println("Invalid File Exception " + e.getMessage());
+                }
                 break;
 
             case 2:
@@ -318,9 +308,7 @@ public class SalesDatabase {
                     } catch (InputMismatchException exception) {
                         System.out.println("Invalid inout type received");
                     }
-
                 }
-
 
                 if (selectedOption == 1) {
                     displayAllFiles();
@@ -370,8 +358,19 @@ public class SalesDatabase {
             }
     }
 
+    private ArrayList<String> filterPaths() {
+        ArrayList<String> solution = new ArrayList<>();
+        for (String path: logs) {
+            if (path.contains(".txt")) {
+                solution.add(path);
+            }
+        }
+        return solution;
+    }
+
     private void displayAllFiles() {
-        ArrayList<String> allFiles = listFiles();
+        // here we need path to all the files
+        ArrayList<String> allFiles = filterPaths();
         for (String filePath: allFiles) {
             try {
                 filePath = filePath.replace(" ", "");
@@ -385,13 +384,6 @@ public class SalesDatabase {
         }
     }
 
-    private void printFiles(ArrayList<String> files) {
-        for (String file: files) {
-            String[] details = file.split("/");
-            System.out.println("FileName: " + details[details.length - 1]);
-            System.out.println("Path: " + file);
-        }
-    }
 
 
     public static void main(String[] args) {
