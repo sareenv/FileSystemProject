@@ -1,10 +1,10 @@
 
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/
-	file: 1/Tom.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/hacker.txt
-	file: 1/New.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/Harry.txt
-Directory: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/
-	file: /Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/Sam.txt
+/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1
+	/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/Tom.txt
+/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test
+	/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/test/hacker.txt
+	/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/1/New.txt
+/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3
+	/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/3/Harry.txt
+/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2
+	/Users/databunker/IdeaProjects/AssignmentFS/src/SalesDatabase/Data/2/Sam.txt

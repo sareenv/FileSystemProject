@@ -225,6 +225,7 @@ public class SalesDatabase {
         }
         return new SearchResult(false, opCnt);
     }
+
     /**
      * search for the sales record in the file system with order id.
      * @param order_ID is the order id of the sale item.
@@ -271,7 +272,7 @@ public class SalesDatabase {
             case 1:
                 try {
                     ArrayList<String> result = listFilesAndDirectories();
-                    String outputPath = basePath + "/output.txt/";
+                    String outputPath = basePath + "/log.txt/";
                     logs.addAll(result);
                     printLogs();
                     writeLog(outputPath);
